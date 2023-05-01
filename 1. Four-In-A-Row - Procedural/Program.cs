@@ -1,77 +1,51 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Principal;
-using MySql.Data.MySqlClient;
-using System.Runtime.Serialization.Formatters;
+using System.Xml.Schema;
 
 namespace _1.Four_In_A_Row___Procedural
 {
     class Program
     {
+        private static void SetPlayerColor(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case 1:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+            }
+        }
+
         static void Main()
         {
-            /* MySQL database connection */
-
-            /* 1. connection parameters */
-            string _connectionString = "server=localhost; uid=root; pwd=DeepSeaTurtles2022; database=world";
-
-            /* 2. create new MySQL Connection, using the connection parameters */
-            MySqlConnection con = new MySqlConnection(_connectionString);
-            
-            /* 3. open the connection = connect to the MySQL server and database */
-            con.Open();
-
-            /* 4. create a MySQL query */
-            string query = "SELECT * FROM world.city WHERE Population > 1000000 ORDER BY Population DESC";
-            
-            /* 5. create the command to execute that query using the previously created MySQL db connection */
-            MySqlCommand cmd = new MySqlCommand(query, con);
-
-            /* 6. execute the query and gather the resultset in a MySQL Reader Object */
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            /* <optional> output headers */
-            Console.Write("Name");
-            Console.SetCursorPosition(30, Console.CursorTop);
-            Console.Write("CountryCode");
-            Console.SetCursorPosition(45, Console.CursorTop);
-            Console.Write("District");
-            Console.SetCursorPosition(70, Console.CursorTop);
-            Console.WriteLine("Population");
-            
-            /* 7. output (some of) the fields of the records of the resultset as strings */
-            while (reader.Read()) /* Read() reads the next row (or record) from the resultset */
-            {
-                Console.Write(reader["Name"].ToString());
-                Console.SetCursorPosition(30, Console.CursorTop);
-                Console.Write(reader["CountryCode"].ToString());
-                Console.SetCursorPosition(45, Console.CursorTop);
-                Console.Write(reader["District"].ToString());
-                Console.SetCursorPosition(70, Console.CursorTop);
-                Console.WriteLine(reader["Population"].ToString());
-            }
-
-            Console.ReadLine(); /* keep console window open after program ends */
-
             /*************************************/
             /* declare and initialize local vars */
             /*************************************/
 
             /* declare and initialize helper vars for input validation and sanitization */
-            bool validInput;
+            bool validInput = false;
             string rawInput;
 
-            /* define look of tokens for player 1 and 2 */
-            string[] playerToken = new string[2]
+            /* define look of player tokens */
+            string[] playerTokens = new string[3]
             {
-                "\u2B1B", /* large white square */
-                "\u2B1A" /* large black square */
+                "[]",
+                "()",
+                "<>"
             };
 
-            /* set default column and row sizes */
-            Dictionary<string, int> sizes = new Dictionary<string, int>(2)
+            /* set default values */
+            int numberofPlayers = 2;
+            int minPlayers = 2;
+            int maxPlayers = 3;
+            Dictionary<string, int> size = new Dictionary<string, int>(2)
             {
                 { "columns", 7 },
                 { "rows", 6 }
@@ -79,13 +53,20 @@ namespace _1.Four_In_A_Row___Procedural
 
             /* declare and initialize helper variables for game progress */
             bool gameHasEnded = false;
-            int currentTurn = 0;
-            int currentMove; /* starts at 0, will be set 1 higher at start of every turn */
+            int currentTurn = 0; /* starts at 0, will be set 1 higher at start of every turn */
+            int currentMove; /* the column and row in which a token has last been set */
             int currentPlayer;
-            string[] players =
+            string[] playerNames =
             {
                 "player 1",
-                "player 2"
+                "player 2",
+                "player 3"
+            };
+            Dictionary<string, int> latestMove = new Dictionary<string, int>
+            {
+                {"player", 0},
+                {"column", 0},
+                {"row", 0}
             };
 
             /* clear and set console configuration parameters */
@@ -98,43 +79,61 @@ namespace _1.Four_In_A_Row___Procedural
             Console.WriteLine("Set board dimensions (min 4, max 10, defaults is 7 columns by 6 rows)");
             Console.WriteLine("Press [enter] to accept default.");
             Console.WriteLine();
-            foreach (string size in sizes.Keys.ToList())
+            foreach (string dimension in size.Keys.ToList())
             {
                 validInput = false;
-                Console.Write($"Number of {size} [{sizes[size]}]: ");
+                Console.Write($"Number of {dimension} [{size[dimension]}]: ");
                 while (!validInput)
                 {
                     Console.ForegroundColor = ConsoleColor.Blue;
                     rawInput = Console.ReadLine();
                     Console.ResetColor();
-                    if (!string.IsNullOrEmpty(rawInput))
+                    if (!string.IsNullOrWhiteSpace(rawInput))
                     {
                         validInput = int.TryParse(rawInput, out int result);
-                        if (validInput) sizes[size] = Math.Max(4, Math.Min(Math.Abs(result), 10));
+                        if (validInput) size[dimension] = Math.Max(4, Math.Min(Math.Abs(result), 10));
                     }
                     else validInput = true;
                 }
+                validInput = false;
             }
 
             /* define array with boolean values for each columns, to indicate full or not */
             /* initialize with all false values */
-            bool[] isColumnFull = new bool[sizes["columns"]]; 
+            bool[] isColumnFull = new bool[size["columns"]];
+            bool isGameBoardFull = false;
             for (int i = 0; i < isColumnFull.Length; i++)
             {
                 isColumnFull[i] = false;
             }
 
-            /* Console Input - player names */
-            for (int i = 0; i < 2; i++)
+            /* Console Input - number of players */
+            Console.Write($"Number of players [2]: ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            rawInput = Console.ReadLine();
+            Console.ResetColor();
+            while (!validInput)
             {
-                Console.Write($"Name for {players[i]}: ");
-                Console.ForegroundColor = ConsoleColor.Blue;
-                rawInput = Console.ReadLine();
-                Console.ResetColor();
-                if (!string.IsNullOrWhiteSpace(rawInput))
+                if (!string.IsNullOrWhiteSpace(rawInput)) /* default value applies if player presses [ENTER] or space(s) */
                 {
-                    players[i] = rawInput;
+                    validInput = int.TryParse((string)rawInput, out int result);
+                    if (validInput) numberofPlayers = Math.Min(maxPlayers, Math.Max(minPlayers, Math.Abs(result))); /* make sure it is a positive integer within min and max bounds */
                 }
+                else validInput = true;
+            }
+            validInput = false;
+
+            /* Console Input - player names */
+            for (int i = 0; i < numberofPlayers; i++)
+            {
+                Console.Write($"Name for {playerNames[i]}: ");
+                Program.SetPlayerColor(i);
+                rawInput = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(rawInput)) /* default value applies if player presses [ENTER] or space(s) */
+                {
+                    playerNames[i] = rawInput;
+                }
+                Console.ResetColor();
             }
             Console.WriteLine();
 
@@ -143,25 +142,24 @@ namespace _1.Four_In_A_Row___Procedural
             /*************************************/
 
             /* visual board, the one we print to console */
-            string[,] visualBoard = new string[sizes["columns"], sizes["rows"]];
+            string[,] visualBoard = new string[size["columns"], size["rows"]];
            
-            for (int column = 0; column < sizes["columns"]; column++)
+            for (int column = 0; column < size["columns"]; column++)
             {
-                for (int row = 0; row < sizes["rows"]; row++)
+                for (int row = 0; row < size["rows"]; row++)
                 {
-                    visualBoard[column, row] = "\u2B1C";
+                    visualBoard[column, row] = "  ";
                 }
             }
 
             /* internal board, the one we use to calculate game state */
             /* 0 = empty cel */
-            /* 1 = token player 1 */
-            /* 2 = token player 2 */
-            int[,] gameBoard = new int[sizes["columns"], sizes["rows"]];
+            /* x = token player x */
+            int[,] gameBoard = new int[size["columns"], size["rows"]];
 
-            for (int column = 0; column < sizes["columns"]; column++)
+            for (int column = 0; column < size["columns"]; column++)
             {
-                for (int row = 0; row < sizes["rows"]; row++)
+                for (int row = 0; row < size["rows"]; row++)
                 {
                     gameBoard[column, row] = 0;
                 }
@@ -171,73 +169,247 @@ namespace _1.Four_In_A_Row___Procedural
             /* START GAME */
             /**************/
 
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write("Press any key to start the game...");
             Console.ReadKey();
 
-            while (!gameHasEnded)
+            /* display game board initially */
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            for (int row = 0; row < size["rows"]; row++)
             {
-                Console.Clear();
-                currentPlayer = currentTurn % 2; /* ronde 0 --> player 1 = players[0] */
+                for (int column = 0; column < size["columns"]; column++)
+                {
+                    Console.SetCursorPosition(column * 3 + 2, row + 1);
+                    Console.Write("|");
+                    string token = visualBoard[column, row];
+                    for (int i = 0; i < numberofPlayers; i++)
+                    {
+                        if (token == playerTokens[i])
+                        {
+                            Program.SetPlayerColor(i);
+                        }
+                    }
+                    Console.Write(token);
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+                Console.Write("|");
+            }
+
+            /* horizontal bar below board and above column numbers */
+            Console.SetCursorPosition(2, size["rows"] + 1);
+            for (int column = 0; column < size["columns"]; column++)
+            {
+                Console.Write($"|--");
+            }
+            Console.Write("|");
+
+            Console.SetCursorPosition(2, size["rows"] + 2);
+            for (int column = 0; column < size["columns"]; column++)
+            {
+                Console.Write($"| {column + 1}");
+            }
+            Console.Write("|");
+
+            while (!gameHasEnded && !isGameBoardFull)
+            {
+                currentPlayer = currentTurn % numberofPlayers; /* ronde 0 --> player 1 = players[0] */
                 currentTurn++; /* new round; starts at 1, not 0 */
 
-                /* display game board */
-                Console.WriteLine();
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Black;
-                for (int row = 0; row < sizes["rows"]; row++)
-                {
-                    for (int column = 0; column < sizes["columns"]; column++)
-                    {
-                        string token = visualBoard[column, row];
-                        if (token == "\u2B1B") Console.ForegroundColor = ConsoleColor.Black;
-                        if (token == "\u2B1A") Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write(" " + token);
-                        Console.ForegroundColor = ConsoleColor.Black;
-                    }
-                    Console.Write(" ");
-                    Console.WriteLine();
-                }
-                Console.ResetColor();
-
-                for (int column = 0; column < sizes["columns"]; column++)
-                {
-                    Console.Write($" {column}");
-                }
-                Console.WriteLine();
-                Console.WriteLine();
-
                 /* Console Input - player X move */
-                Console.WriteLine($"Ronde {currentTurn}.");
-                Console.Write($"{players[currentPlayer]} is aan zet: ");
-
-                rawInput = Console.ReadLine();
-                if (int.TryParse(rawInput, out int result))
+                validInput = false;
+                while (!validInput)
                 {
-                    currentMove = Math.Min(Math.Abs(result), sizes["columns"]);
-                    if (isColumnFull[currentMove]) currentMove = 0; /* cannot drop token in full column */
-                }
-                else currentMove = 0; /* drop token in first column if input is invalid */
+                    Console.ResetColor();
+                    Console.SetCursorPosition(0, size["rows"] + 4);
+                    Console.Write(new String(' ', Console.BufferWidth));
+                    Console.Write(new String(' ', Console.BufferWidth));
+                    Console.SetCursorPosition(2, size["rows"] + 4);
+                    Console.Write($"Ronde {currentTurn}.");
+                    Program.SetPlayerColor(currentPlayer);
+                    Console.SetCursorPosition(2, size["rows"] + 5);
+                    Console.Write($"{playerNames[currentPlayer]} is aan zet: ");
+                    rawInput = Console.ReadLine();
 
-                for (int i = sizes["rows"] - 1; i >= 0;  i--)
-                {
-                    if (gameBoard[currentMove, i] == 0)
+                    validInput = int.TryParse((string)rawInput, out int result);
+                    if (validInput)
                     {
-                        gameBoard[currentMove, i] = currentPlayer + 1;
-                        string newToken = playerToken[currentPlayer];
-                        visualBoard[currentMove, i] = newToken;
-                        break;
+                        currentMove = Math.Max(1, Math.Min(Math.Abs(result), size["columns"]));
+                        if (isColumnFull[currentMove - 1])
+                        {
+                            validInput = false;
+                            Console.SetCursorPosition(2, size["rows"] + 7);
+                            Console.ResetColor();
+                            Console.WriteLine("Deze kolom is vol. Je kan hier geen token meer plaatsen.");
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(0, size["rows"] + 7);
+                            Console.Write(new String(' ', Console.BufferWidth));
+                            for (int i = size["rows"] - 1; i >= 0; i--)
+                            {
+                                if (gameBoard[currentMove - 1, i] == 0)
+                                {
+                                    gameBoard[currentMove - 1, i] = currentPlayer + 1;
+                                    visualBoard[currentMove - 1, i] = playerTokens[currentPlayer];
+                                    if (i == 0)
+                                    {
+                                        isColumnFull[currentMove - 1] = true;
+                                    }
+                                    latestMove["player"] = currentPlayer;
+                                    latestMove["column"] = currentMove - 1;
+                                    latestMove["row"] = i;
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    isColumnFull[currentMove] = true;
+                }
+
+                /* update visual board */
+                Console.SetCursorPosition(latestMove["column"] * 3 + 3, latestMove["row"] + 1);
+                Console.BackgroundColor = ConsoleColor.White;
+                Program.SetPlayerColor(currentPlayer);
+                Console.Write(playerTokens[currentPlayer]);
+
+                /* check if 4-in-a-row has been made by this latest move */
+                /* we need to check 7 out of 8 directions (north doen't need to be checked) */
+                /* the token + the number of adjacent tokens of same player in 2 opposite directions, */
+                /* needs to be 4 in order to have a win */
+
+                /* initialize starting values */
+                int total = 1; /* we always start with a 'row' of size 1 */
+                int j = 1;
+
+                /* 1A. north-east */
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] + j < size["columns"] && 
+                    latestMove["row"] - j >= 0 && 
+                    gameBoard[latestMove["column"] + j, latestMove["row"] - j] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 1B. south-west */
+                j = 1;
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] - j >= 0 &&
+                    latestMove["row"] + j < size["rows"] &&
+                    gameBoard[latestMove["column"] - j, latestMove["row"] + j] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 2A. east */
+                j = 1;
+                total = 1;
+
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] + j < size["columns"] &&
+                    gameBoard[latestMove["column"] + j, latestMove["row"]] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 2B. west */
+                j = 1;
+
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] - j >= 0 &&
+                    gameBoard[latestMove["column"] - j, latestMove["row"]] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 3. south */
+                j = 1;
+                total = 1;
+
+                while (
+                    !gameHasEnded &&
+                    latestMove["row"] + j < size["rows"] &&
+                    gameBoard[latestMove["column"], latestMove["row"] + j] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 4A. north-west */
+                j = 1;
+                total = 1;
+
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] - j >= 0 &&
+                    latestMove["row"] - j >= 0 &&
+                    gameBoard[latestMove["column"] - j, latestMove["row"] - j] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+
+                /* 4B. south-east */
+                j = 1;
+
+                while (
+                    !gameHasEnded &&
+                    latestMove["column"] + j < size["columns"] &&
+                    latestMove["row"] + j < size["rows"] &&
+                    gameBoard[latestMove["column"] + j, latestMove["row"] + j] == currentPlayer + 1
+                    )
+                {
+                    total++;
+                    j++;
+                    if (total >= 4) gameHasEnded = true;
+                }
+            }
+            
+            /* we have a winner! */ 
+            if (gameHasEnded)
+            {
+                Console.SetCursorPosition(2, size["rows"] + 7 );
+                Console.ResetColor();
+                Console.WriteLine($"Proficiat {playerNames[latestMove["player"]]}. U hebt gewonnen!");
+            }
+            else
+            {
+                /* check whether the game board is full */
+                isGameBoardFull = true;
+                for (int i = 0; i < size["columns"]; i++)
+                {
+                    isGameBoardFull = isGameBoardFull && isColumnFull[i];
+                }
+
+                if (isGameBoardFull)
+                {
+                    Console.SetCursorPosition(2, size["rows"] + 7);
+                    Console.ResetColor();
+                    Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
                 }
             }
 
-            gameHasEnded = true;
-        
             Console.ReadLine(); /* keep console window open after program ends */
         }
-
-
-
     }
 }
