@@ -32,13 +32,13 @@
         {
             /* key is the player number (0 for empty cell / no player) */
             /* value is a string array: player name, player token, player color */
-            {0, new [] { "empty_cell", "  ", "black" } },
-            {1, new [] { "player 1", "[]", "blue" } },
-            {2, new [] { "player 2", "()", "red" } },
-            {3, new [] { "player 3", "<>", "green" } },
-            {4, new [] { "player 4", "><", "magenta" } }
+            {0, new [] { "empty_cell", "  ", "Black" } },
+            {1, new [] { "player 1", "[]", "Red" } },
+            {2, new [] { "player 2", "()", "Green" } },
+            {3, new [] { "player 3", "<>", "Magenta" } },
+            {4, new [] { "player 4", "><", "DarkYellow" } }
         };
-
+         
         private static Dictionary<string, int> latestMove = new(3)
         {
             {"player", 0},
@@ -52,7 +52,6 @@
             { "rows", new int[] { MINROWS, ROWS, MAXROWS } }
         };
         private static bool[]? isColumnFull;
-        private static bool thereIsAWinner = false;
         private static int currentTurn = 0; /* starts at 0, will be set 1 higher at start of every turn */
         private static int currentMove; /* the column in which a token has last been placed */
         private static int currentPlayer;
@@ -94,7 +93,6 @@
                     }
                     else validInput = true;
                 }
-                validInput = false;
             }
         }
 
@@ -115,32 +113,34 @@
         private static void InitializeGameBoard()
         {
             SetGameBoardDimensions();
+            InitializeColumnStatus();
             CreateEmptyGameBoard();
         }
 
-        private static void UpdateGameBoard(Dictionary<string, int> move)
+        private static void UpdateGameBoardDisplay(Dictionary<string, int> move)
         {
             /* column * 3 because each cell takes up 3 positions */
             /* column + 3 because each line starts with 2 spaces */
             /* row + 1 because the top line of the console is left empty */
-            Console.SetCursorPosition(move["column"] * 3 + 3, move["row"] + 1);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[move["player"]][2]);
-            Console.Write(players[move["player"]]);
+            Console.SetCursorPosition(move["column"] * 3, move["row"]);
+            Console.Write(players[move["player"]][1]);
         }
 
-        private static void InitializeColumnStatus(bool[] columnStatus)
+        private static void InitializeColumnStatus()
         {
-            for (int i = 1; i <= columnStatus.Length; i++)
+            isColumnFull = new bool[gameBoardSize["columns"][1] + 1];
+            for (int i = 1; i <= isColumnFull.Length - 1; i++)
             {
-                columnStatus[i] = false;
+                isColumnFull[i] = false;
             }
         }
 
         private static bool IsGameBoardFull(bool[] isColumnFull)
         {
             bool gameBoardFull = true;
-            for (int i = 1; i <= isColumnFull.Length; i++)
+            for (int i = 1; i <= isColumnFull.Length - 1; i++)
             {
                 gameBoardFull = gameBoardFull && isColumnFull[i]; /* turns false as soon as 1 column is not full */
             }
@@ -157,9 +157,9 @@
             {
                 for (int column = 1; column <= gameBoardSize["columns"][1]; column++)
                 {
-                    Console.SetCursorPosition(column * 3 + 2, row + 1);
+                    Console.SetCursorPosition((column * 3) - 1, row);
                     Console.Write("|");
-                    /* gameBoard gives player number, ndex 1 gives 2nd value of string array = token string */
+                    /* gameBoard gives player number, index 1 gives 2nd value of string array = token string */
                     string token = players[key: gameBoard[column, row]][1];
                     Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[key: gameBoard[column, row]][2]);
                     Console.Write(token);
@@ -176,10 +176,13 @@
             }
             Console.Write("|");
 
+            /* column numbers */
             Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 2);
-            for (int column = 1; column < gameBoardSize["columns"][1]; column++)
+            for (int column = 1; column <= gameBoardSize["columns"][1]; column++)
             {
-                Console.Write($"| {column + 1}");
+                char[] charsToTrim = { ' ' };
+                string columnString = column.ToString().Trim(charsToTrim).PadLeft(2);
+                Console.Write($"|{columnString}");
             }
             Console.Write("|");
         }
@@ -206,9 +209,9 @@
         private static void GetPlayerNames()
         {
             Console.ResetColor();
-            for (int i = 0; i < playerCount; i++)
+            for (int i = 1; i <= playerCount; i++)
             {
-                Console.Write($"Name for {players[i]}: ");
+                Console.Write($"Name for {players[i][0]}: ");
                 Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[i][2]);
                 rawInput = Console.ReadLine();
                 players[i][0] = rawInput ?? players[i][0];
@@ -240,9 +243,11 @@
             validInput = false;
             while (!validInput)
             {
-                Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 5);
                 Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[player][2]);
-                Console.Write($"{players[currentPlayer]} is aan zet: ");
+                Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 5);
+                Console.Write(new String(' ', Console.BufferWidth));
+                Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 5);
+                Console.Write($"{players[player][0]} is aan zet: ");
                 rawInput = Console.ReadLine();
 
                 validInput = int.TryParse(rawInput, out int result);
@@ -275,7 +280,7 @@
                                 if (i == 1) isColumnFull[currentMove] = true;
 
                                 /* update latest move */
-                                latestMove["player"] = currentPlayer;
+                                latestMove["player"] = player;
                                 latestMove["column"] = currentMove;
                                 latestMove["row"] = i;
                                 break; /* no need to continue for-loop since an empty cell was found already */
@@ -442,16 +447,16 @@
                 currentTurn++; /* new round; starts at 1, not 0 */
 
                 GetPlayerMove(currentTurn, currentPlayer);
+                UpdateGameBoardDisplay(latestMove); /* show the newly placed token without rebuilding the whole game board */
 
                 if (GameHasAWinner(latestMove))
                 {
-                    Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
                     Console.ResetColor();
-                    Console.WriteLine($"Proficiat {players[latestMove["player"]]}. U hebt gewonnen!");
+                    Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
+                    Console.WriteLine($"Proficiat {players[latestMove["player"]][0]}. U hebt gewonnen!");
                 }
                 else
                 {
-                    /* check whether the game board is full */
                     if (IsGameBoardFull(isColumnFull))
                     {
                         Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
