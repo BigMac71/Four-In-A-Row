@@ -383,29 +383,29 @@ namespace _1.Four_In_A_Row___Procedural
                     j++;
                     if (total >= 4) gameHasEnded = true;
                 }
-            }
-            
-            /* we have a winner! */ 
-            if (gameHasEnded)
-            {
-                Console.SetCursorPosition(2, size["rows"] + 7 );
-                Console.ResetColor();
-                Console.WriteLine($"Proficiat {playerNames[latestMove["player"]]}. U hebt gewonnen!");
-            }
-            else
-            {
-                /* check whether the game board is full */
-                isGameBoardFull = true;
-                for (int i = 0; i < size["columns"]; i++)
-                {
-                    isGameBoardFull = isGameBoardFull && isColumnFull[i];
-                }
 
-                if (isGameBoardFull)
+                /* we have a winner! */
+                if (gameHasEnded)
                 {
                     Console.SetCursorPosition(2, size["rows"] + 7);
                     Console.ResetColor();
-                    Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
+                    Console.WriteLine($"Proficiat {playerNames[latestMove["player"]]}. U hebt gewonnen!");
+                }
+                else
+                {
+                    /* check whether the game board is full */
+                    isGameBoardFull = true;
+                    for (int i = 0; i < size["columns"]; i++)
+                    {
+                        isGameBoardFull = isGameBoardFull && isColumnFull[i];
+                    }
+
+                    if (isGameBoardFull)
+                    {
+                        Console.SetCursorPosition(2, size["rows"] + 7);
+                        Console.ResetColor();
+                        Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
+                    }
                 }
             }
 
