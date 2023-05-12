@@ -5,7 +5,9 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1. Four-In-A-Row - Procedural", "1. Four-In-A-Row - Procedural\1. Four-In-A-Row - Procedural.csproj", "{BE15F49A-8C35-4229-9556-D00C98204B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Four-In-A-Row - Procedural with Functions", "Four-In-A-Row - Procedural with Functions\Four-In-A-Row - Procedural with Functions.csproj", "{2AD949C4-3448-4BEA-8754-BFEC10C050E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2. Four-In-A-Row - Procedural with Functions", "Four-In-A-Row - Procedural with Functions\2. Four-In-A-Row - Procedural with Functions.csproj", "{2AD949C4-3448-4BEA-8754-BFEC10C050E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3. Four-In-A-Row - OOP version", "Four-In-A-Row - OOP version\3. Four-In-A-Row - OOP version.csproj", "{F9AF554C-A3EE-4E36-A645-287B0959D888}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2AD949C4-3448-4BEA-8754-BFEC10C050E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AD949C4-3448-4BEA-8754-BFEC10C050E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AD949C4-3448-4BEA-8754-BFEC10C050E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9AF554C-A3EE-4E36-A645-287B0959D888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9AF554C-A3EE-4E36-A645-287B0959D888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9AF554C-A3EE-4E36-A645-287B0959D888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9AF554C-A3EE-4E36-A645-287B0959D888}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
