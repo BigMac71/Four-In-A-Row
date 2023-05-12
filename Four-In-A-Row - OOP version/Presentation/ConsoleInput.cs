@@ -2,14 +2,14 @@
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
-    internal class ConsoleInput : ConsoleConfig
+    public class ConsoleInput : ConsoleConfig
     {
         public static readonly string backgroundColor = "Black";
         public static readonly string foregroundColor = "Blue";
 
         private static string? rawInput;
 
-        private ConsoleOutput Output;
+        private ConsoleOutput Output {get; set; }
 
         public ConsoleInput(int left, int top)
         {
@@ -19,13 +19,15 @@ namespace Four_In_A_Row___OOP_version.Presentation
             Output = new ConsoleOutput(left, top);
         }
 
+        /* @ToDo */
+        /* use ColorScheme instead, or abandon separate class ColorScheme */
         public static void SetDefaultColors()
         {
             Console.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), backgroundColor);
             Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), foregroundColor);
         }
 
-        private static void PressAnyKeyToContinue()
+        public void PressAnyKeyToContinue()
         {
             Output.Print("Press any key to start the game...", false);
             Console.ReadKey();
@@ -35,11 +37,11 @@ namespace Four_In_A_Row___OOP_version.Presentation
         {
             SetDefaultColors();
             Console.Write($"Number of players (${Game.MINPLAYERS} - ${Game.MAXPLAYERS}) [{Game.defaultPlayerCount}]: ");
-            saveCursorPosition(Console.CursorLeft, Console.CursorTop);
+            SaveCursorPosition(Console.CursorLeft, Console.CursorTop);
             
             do 
             {
-                setCursorPosition(leftCursorPosition, topCursorPosition);
+                SetCursorPosition(leftCursorPosition, topCursorPosition);
                 rawInput = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(rawInput))
                 {
@@ -47,19 +49,19 @@ namespace Four_In_A_Row___OOP_version.Presentation
                     {
                         if (playerCount < Game.MINPLAYERS) 
                         {
-                            Output.setCursorPosition(2, topCursorPosition + 2);
+                            SetCursorPosition(2, topCursorPosition + 2);
                             Output.Print($"Ongeldig aantal spelers. Het minimum aantal spelers is {Game.MINPLAYERS}", true);
                             continue;
                         }
                         if (playerCount > Game.MAXPLAYERS)
                         {
-                            Output.setCursorPosition(2, topCursorPosition + 2);
+                            SetCursorPosition(2, topCursorPosition + 2);
                             Output.Print($"Ongeldig aantal spelers. Het maximum aantal spelers is {Game.MAXPLAYERS}", true);
                             continue;
                         }
                         return playerCount;
                     }
-                    Output.setCursorPosition(1, topCursorPosition + 2);
+                    SetCursorPosition(1, topCursorPosition + 2);
                     Output.Print($"Ongeldig aantal spelers. Gelieve een getal in te geven tussen {Game.MINPLAYERS} en {Game.MAXPLAYERS}", true);
                 }
                 /* default value applies if player presses [ENTER] or space(s) */
@@ -68,12 +70,13 @@ namespace Four_In_A_Row___OOP_version.Presentation
             while (true);
         }
 
+        /* @ToDo */
         public void GetPlayerNames(Player[] players )
         {
             SetDefaultColors();
             for (int i = 1; i <= players.Length; i++)
             {
-                Output.setCursorPosition(2, topCursorPosition + 2);
+                SetCursorPosition(2, topCursorPosition + 2);
                 Output.Print($"Name for {players[i]}: ", false);
 
                 Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[i][2]);
@@ -84,7 +87,8 @@ namespace Four_In_A_Row___OOP_version.Presentation
             Console.WriteLine();
         }
 
-        private static void GetGameBoardDimensions()
+        /* @ToDo */
+        private static void GetBoardDimensions()
         {
             Console.WriteLine($"Set board dimensions");
             Console.WriteLine($"Defaults are {COLUMNS} columns by {ROWS} rows.");
@@ -111,6 +115,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
             }
         }
 
+        /* @ToDo */
         private static void GetPlayerMove(int turn, int player)
         {
             Console.ResetColor();

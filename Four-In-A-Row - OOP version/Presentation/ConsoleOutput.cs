@@ -1,6 +1,6 @@
 ﻿namespace Four_In_A_Row___OOP_version.Presentation
 {
-    internal class ConsoleOutput : ConsoleConfig
+    public class ConsoleOutput : ConsoleConfig
     {
         public static readonly string backgroundColor = "Black";
         public static readonly string foregroundColor = "White";
@@ -30,6 +30,7 @@
             }
         }
 
+        /* @ToDo */
         private static void DisplayGameBoard()
         {
             Console.Clear();
@@ -69,6 +70,7 @@
             Console.Write("|");
         }
 
+        /* @ToDo */
         private static void UpdateGameBoardDisplay(Dictionary<string, int> move)
         {
             /* column * 3 because each cell takes up 3 positions */

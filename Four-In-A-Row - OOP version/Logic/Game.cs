@@ -6,21 +6,32 @@ using System.Threading.Tasks;
 
 namespace Four_In_A_Row___OOP_version.Logic
 {
-    internal class Game
+    public class Game
     {
         public const int MINPLAYERS = 2;
         public const int MAXPLAYERS = 4;
         
         public static readonly int defaultPlayerCount = 2;
 
-        public int PlayerCount { get; set; } = defaultPlayerCount;
+        public static Player[] Players { get; } =
+{
+            new Player("empty cell", "  ", "Black"),
+            new Player("player 1", "[]", "Red"),
+            new Player("player 2", "()", "Green"),
+            new Player("player 3", "<>", "Magenta"),
+            new Player("player 4", "><", "DarkYellow")
+        };
+        public static Player[]? ActivePlayers { get; set; }
+        
+        public Game() : this(defaultPlayerCount) { }
 
-        public Game() { }
         public Game(int playerCount) 
         { 
-            PlayerCount = playerCount; 
+            ActivePlayers = new Player[playerCount + 1];
+            ActivePlayers = Players.Take(playerCount + 1).ToArray();
         }
 
+        /* @ToDo */
         private static bool HasAWinner(Dictionary<string, int> move)
         {
             /* check if 4-in-a-row has been made by this latest move */
@@ -142,7 +153,5 @@ namespace Four_In_A_Row___OOP_version.Logic
 
             return thereIsAWinner;
         }
-
-
     }
 }

@@ -4,12 +4,12 @@ namespace Four_In_A_Row___OOP_version.Logic
 {
     internal class Move
     {
-        public GameBoard Board { get; set; }
+        public Board Board { get; set; }
         public Player Player { get; set; }
         public int Column { get; set; }
         public int? Row { get; set; }
 
-        public Move(GameBoard board, Player player, int column)
+        public Move(Board board, Player player, int column)
         {
             Board = board;
             Player = player;
@@ -21,7 +21,7 @@ namespace Four_In_A_Row___OOP_version.Logic
         {
             if (this.MoveIsLegal())
             {
-                for (int i = this.Board.; i > 0; i--)
+                for (int i = this.Board.Columns; i > 0; i--)
                 {
                     if (gameBoard[currentMove, i] == 0) /* if cell is empty */
                     {
@@ -41,16 +41,22 @@ namespace Four_In_A_Row___OOP_version.Logic
             }
         }
 
-        public bool MoveIsLegal()
+        /* @ToDo */
+        private bool MoveIsLegal()
         {
-            if (!this.Board.ColumnIsFull(this.Column))
+            if (!this.Board.ColumnIsFull[this.Column])
             {
-                ConsoleOutput.displayColumnFull();
+                Output.Print(/* column out of range */);
 
                 return false;
             }
 
-            if (this.Column < 1 || this.Column > this.Board.)
+            if (this.Column < 1 || this.Column > this.Board.Columns)
+            {
+                Outputter.Print(/* column out of range */);
+
+                return false;
+            }
         }
     }
 }
