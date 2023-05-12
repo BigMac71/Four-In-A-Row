@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 namespace Four_In_A_Row___OOP_version.Logic
 {
-    internal class Player
-    {       
-        public int Number { get; set; }
+    public class Player
+    {
         public string Name { get; set; }
+        public string Token { get; set; }
+        public string Color { get; set; }
 
-        public Token PlayerToken { get; set; }
-
-        public 
-
+        public Player(string name, string token, string color) 
+        {
+            Name = name;
+            Token = token;
+            Color = color;
+        }
     }
 }

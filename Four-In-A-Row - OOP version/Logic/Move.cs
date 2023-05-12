@@ -17,6 +17,7 @@ namespace Four_In_A_Row___OOP_version.Logic
             CalculateRow();
         }
 
+        /* @ToDo */
         public void CalculateRow()
         {
             if (this.MoveIsLegal())
@@ -42,21 +43,24 @@ namespace Four_In_A_Row___OOP_version.Logic
         }
 
         /* @ToDo */
+        /* get output instance available from within this object */
         private bool MoveIsLegal()
         {
-            if (!this.Board.ColumnIsFull[this.Column])
+            if (this.Board.ColumnIsFull[this.Column])
             {
-                Output.Print(/* column out of range */);
+                Output.Print(/* column full */);
 
                 return false;
             }
 
             if (this.Column < 1 || this.Column > this.Board.Columns)
             {
-                Outputter.Print(/* column out of range */);
+                Output.Print(/* column out of range */);
 
                 return false;
             }
+
+            return true;
         }
     }
 }

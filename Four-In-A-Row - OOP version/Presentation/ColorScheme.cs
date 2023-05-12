@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
-    internal class ColorScheme
+    public class ColorScheme
     {
         public ConsoleColor BackgroundColor { get; set; }
         public ConsoleColor ForegroundColor { get; set; }
@@ -24,10 +24,10 @@ namespace Four_In_A_Row___OOP_version.Presentation
             ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), foregroundColor);
         }
 
-        public static void Implement()
+        public void Implement()
         {
-            Console.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), backgroundColor);
-            Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), foregroundColor);
+            Console.BackgroundColor = BackgroundColor;
+            Console.ForegroundColor = ForegroundColor;
         }
     }
 }
