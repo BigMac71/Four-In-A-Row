@@ -15,12 +15,13 @@ namespace Four_In_A_Row___OOP_version.Logic
 
         public static Player[] Players { get; } =
 {
-            new Player("empty cell", "  ", "Black"),
-            new Player("player 1", "[]", "Red"),
-            new Player("player 2", "()", "Green"),
-            new Player("player 3", "<>", "Magenta"),
-            new Player("player 4", "><", "DarkYellow")
+            new Player(0, "empty cell", "  ", "Black"),
+            new Player(1, "player 1", "[]", "Red"),
+            new Player(2, "player 2", "()", "Green"),
+            new Player(3, "player 3", "<>", "Magenta"),
+            new Player(4, "player 4", "><", "DarkYellow")
         };
+
         public static Player[]? ActivePlayers { get; set; }
         
         public Game() : this(defaultPlayerCount) { }

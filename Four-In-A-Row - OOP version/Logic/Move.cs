@@ -8,6 +8,9 @@ namespace Four_In_A_Row___OOP_version.Logic
         public Player Player { get; set; }
         public int Column { get; set; }
         public int? Row { get; set; }
+        public bool ErrorColumnFull { get; set; } = false;
+        public bool ErrorColumnOutOfRange { get; set; } = false;
+
 
         public Move(Board board, Player player, int column)
         {
@@ -22,40 +25,34 @@ namespace Four_In_A_Row___OOP_version.Logic
         {
             if (this.MoveIsLegal())
             {
-                for (int i = this.Board.Columns; i > 0; i--)
+                for (int i = this.Board.Rows; i > 0; i--)
                 {
-                    if (gameBoard[currentMove, i] == 0) /* if cell is empty */
+                    if (Board.Cells[Column, i].Number == 0) /* if cell is empty */
                     {
                         /* update gameBoard */
-                        gameBoard[currentMove, i] = player;
+                        Board.Cells[Column, i] = Player;
 
                         /* if top row, set column status to full */
-                        if (i == 1) isColumnFull[currentMove] = true;
+                        if (i == 1) Board.ColumnIsFull[Column] = true;
 
-                        /* update latest move */
-                        latestMove["player"] = player;
-                        latestMove["column"] = currentMove;
-                        latestMove["row"] = i;
                         break; /* no need to continue for-loop since an empty cell was found already */
                     }
                 }
             }
         }
 
-        /* @ToDo */
-        /* get output instance available from within this object */
         private bool MoveIsLegal()
         {
             if (this.Board.ColumnIsFull[this.Column])
             {
-                Output.Print(/* column full */);
+                ErrorColumnFull = true;
 
                 return false;
             }
 
             if (this.Column < 1 || this.Column > this.Board.Columns)
             {
-                Output.Print(/* column out of range */);
+                ErrorColumnOutOfRange = true;
 
                 return false;
             }

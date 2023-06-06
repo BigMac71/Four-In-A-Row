@@ -2,22 +2,26 @@
 {
     public class ConsoleOutput : ConsoleConfig
     {
-        public static readonly string backgroundColor = "Black";
-        public static readonly string foregroundColor = "White";
+        public static readonly string defaultBackgroundColor = "Black";
+        public static readonly string defaultForegroundColor = "White";
+        public static readonly ColorScheme defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
+
+        public ColorScheme currentColorScheme;
 
         public ConsoleOutput(int left, int top)
         {
             leftCursorPosition = left;
             topCursorPosition = top;
+
+            currentColorScheme = defaultColorScheme;
         }
 
         public static void SetDefaultColors()
         {
-            Console.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), backgroundColor);
-            Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), foregroundColor);
+            defaultColorScheme.Implement();
         }
 
-        public void Print(string text, bool crlf)
+        public void Print(string text, bool crlf = false)
         {
             Console.SetCursorPosition(leftCursorPosition, topCursorPosition);
             if (crlf)

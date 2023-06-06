@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
-    public class ConsoleConfig : ColorScheme
+    public class ConsoleConfig
     {
         private const string TITLE = "Four-In-A-Row - OOP version";
 
