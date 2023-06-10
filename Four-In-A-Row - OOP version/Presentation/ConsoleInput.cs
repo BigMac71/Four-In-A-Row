@@ -1,34 +1,35 @@
 ﻿using Four_In_A_Row___OOP_version.Logic;
-using System.ComponentModel;
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
     public class ConsoleInput : ConsoleConfig
     {
-        public static readonly string defaultBackgroundColor = "Black";
-        public static readonly string defaultForegroundColor = "Blue";
-        public static readonly ColorScheme defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
+        public readonly ConsoleColor defaultBackgroundColor = ConsoleColor.Black;
+        public readonly ConsoleColor defaultForegroundColor = ConsoleColor.Blue;
+        
+        public readonly ColorScheme defaultColorScheme;
+        public ColorScheme CurrentColorScheme {get; set; }
 
-        public ColorScheme CurrentColorScheme {get; set;} = defaultColorScheme;
+        public ConsoleOutput Output { get; set; }
 
         private string? rawInput;
 
-        private ConsoleOutput Output {get; set; }
-
         public ConsoleInput(int left, int top)
         {
+            defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
+            CurrentColorScheme = defaultColorScheme;
+
             leftCursorPosition = left;
             topCursorPosition = top;
             Output = new ConsoleOutput(left, top);
-            CurrentColorScheme = defaultColorScheme;
         }
 
-        public static void SetDefaultColors()
+        public void SetDefaultColors()
         {
-            defaultColorScheme.Implement();
+            SetColors(defaultBackgroundColor, defaultForegroundColor);
         }
 
-        public void SetColors(string backgroundColor, string foregroundColor)
+        public void SetColors(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
         {
             CurrentColorScheme = new(backgroundColor, foregroundColor);
             CurrentColorScheme.Implement();
@@ -85,7 +86,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
                 SetCursorPosition(2, topCursorPosition + 2);
                 Output.Print($"Name for {players[i]}: ");
 
-                CurrentColorScheme.ChangeForegroundColorTo(players[i].Color);
+                CurrentColorScheme.ForegroundColor = players[i].Color;
                 rawInput = Console.ReadLine();
                 players[i].Name = rawInput ?? players[i].Name;
                 Console.ResetColor();
@@ -111,8 +112,12 @@ namespace Four_In_A_Row___OOP_version.Presentation
             rawInput = Console.ReadLine();
             bool validInput = int.TryParse(rawInput, out int result);
 
-            // als de dimensie invoer correct is (minValue <= invoer <= maxValue) wordt die returned,
-            // anders gebruiken we de standaardwaarde.
+            /* if input is valid (can be cast to int)
+             *     we calculate if it's absolute value is within min and max bounds,
+             *     if that is within bounds, that is returned
+             *     if not, minValue is returned if abs(input) < minValue, or maxValue if abs(input) > maxValue
+             * if input is not valid, the defaultValue is returned.
+             */
             return validInput ? Math.Max(minValue, Math.Min(Math.Abs(result), maxValue)) : defaultValue;
         }
 

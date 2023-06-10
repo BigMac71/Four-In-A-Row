@@ -68,7 +68,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
                     Console.Write(token);
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
-                Console.Write("|");
+        Console.Write(" |");
             }
 
             /* horizontal bar below board and above column numbers */

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Four_In_A_Row___OOP_version.Presentation
+﻿namespace Four_In_A_Row___OOP_version.Presentation
 {
     public class ColorScheme
     {
@@ -19,14 +13,14 @@ namespace Four_In_A_Row___OOP_version.Presentation
         }
 
         // Save a specific background and foreground color
-        public ColorScheme(string backgroundColor, string foregroundColor)
+        public ColorScheme(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
         {
-            BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), backgroundColor);
-            ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), foregroundColor);
+            BackgroundColor = backgroundColor;
+            ForegroundColor = foregroundColor;
         }
 
         // Implement the saved background and/or foreground colors
-        // boolean parameters decide whether to implement or not
+        // boolean parameters decide whether to implement either back- and/or foreground
         public void Implement(bool background = true, bool foreground = true)
         {
             if (background)
@@ -37,22 +31,6 @@ namespace Four_In_A_Row___OOP_version.Presentation
             if (foreground)
             {
                 Console.ForegroundColor = ForegroundColor;
-            }
-        }
-
-        public void ChangeBackgroundColorTo(string? color)
-        {
-            if (color != null)
-            {
-                BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
-            }
-        }
-
-        public void ChangeForegroundColorTo(string? color)
-        {
-            if (color != null)
-            {
-                ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
             }
         }
     }

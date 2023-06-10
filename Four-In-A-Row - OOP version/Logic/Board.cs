@@ -14,27 +14,25 @@
         public Player[,] Cells { get; set; }
         public bool[] ColumnIsFull { get; set; }
 
-        /* constructs a gameBoard with default number of rows and columns */
+        // constructs a gameBoard with default number of rows and columns
         public Board() : this(COLUMNS, ROWS) { }
 
-        /* constructs a gameBoard with a specific number of rows and columns */
+        // constructs a gameBoard with a specific number of rows and columns
         public Board(int columns, int rows)
         {
             Columns = columns;
             Rows = rows;
 
-            /* initialize column status to not full 
-             * cells on column 0 are not initialized
-             */
+            // initialize column status to not full
+            // cells on column 0 are not initialized
             ColumnIsFull = new bool[columns + 1];
             for (int i = 1; i <= columns; i++)
             {
                 ColumnIsFull[i] = false;
             }
 
-            /* initialize all cells as being empty (player 0) 
-             * cells on row 0 and column 0 are not initialized
-             */
+            // initialize all cells as being empty (player 0) 
+            // cells on row 0 and column 0 are not initialized
             Cells = new Player[columns + 1, rows + 1];
             for (int i = 1; i <= columns; i++)
             {
@@ -50,7 +48,8 @@
             bool gameBoardIsFull = true;
             for (int i = 1; i <= ColumnIsFull.Length - 1; i++)
             {
-                gameBoardIsFull = gameBoardIsFull && ColumnIsFull[i]; /* turns false as soon as 1 column is not full */
+                // turns false as soon as a column is not full
+                gameBoardIsFull = gameBoardIsFull && ColumnIsFull[i];
             }
 
             return gameBoardIsFull;
