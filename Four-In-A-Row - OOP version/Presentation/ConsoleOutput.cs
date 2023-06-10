@@ -1,24 +1,32 @@
-﻿namespace Four_In_A_Row___OOP_version.Presentation
+﻿using Four_In_A_Row___OOP_version.Logic;
+
+namespace Four_In_A_Row___OOP_version.Presentation
 {
     public class ConsoleOutput : ConsoleConfig
     {
-        public static readonly string defaultBackgroundColor = "Black";
-        public static readonly string defaultForegroundColor = "White";
-        public static readonly ColorScheme defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
-
-        public ColorScheme currentColorScheme;
+        public readonly ConsoleColor defaultBackgroundColor = ConsoleColor.Black;
+        public readonly ConsoleColor defaultForegroundColor = ConsoleColor.White;
+        
+        public readonly ColorScheme defaultColorScheme;
+        public ColorScheme CurrentColorScheme { get; set; }
 
         public ConsoleOutput(int left, int top)
         {
             leftCursorPosition = left;
             topCursorPosition = top;
-
-            currentColorScheme = defaultColorScheme;
+            defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
+            CurrentColorScheme = defaultColorScheme;
         }
 
-        public static void SetDefaultColors()
+        public void SetDefaultColors()
         {
-            defaultColorScheme.Implement();
+            SetColors(defaultBackgroundColor, defaultForegroundColor);
+        }
+
+        public void SetColors(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
+        {
+            CurrentColorScheme = new(backgroundColor, foregroundColor);
+            CurrentColorScheme.Implement();
         }
 
         public void Print(string text, bool crlf = false)
@@ -34,21 +42,29 @@
             }
         }
 
-        /* @ToDo */
-        private static void DisplayGameBoard()
+        public void PrintBoardDimensionsText()
+        {
+            Console.SetCursorPosition(leftCursorPosition, topCursorPosition);
+            Console.WriteLine($"Set board dimensions");
+            Console.WriteLine($"Defaults are {Board.COLUMNS} columns by {Board.ROWS} rows.");
+            Console.WriteLine($"Allowed range is {Board.MINCOLUMNS} - {Board.MAXCOLUMNS} columns by {Board.MINROWS} - {Board.MAXROWS} rows.");
+            Console.WriteLine("Press [enter] to accept default.");
+            Console.WriteLine();
+        }
+
+        public void DisplayGameBoard(Board gameBoard)
         {
             Console.Clear();
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            for (int row = 1; row <= gameBoardSize["rows"][1]; row++)
+            SetColors(ConsoleColor.White, ConsoleColor.Black);
+            for (int row = 1; row <= gameBoard.Rows; row++)
             {
-                for (int column = 1; column <= gameBoardSize["columns"][1]; column++)
+                for (int column = 1; column <= gameBoard.Rows; column++)
                 {
                     Console.SetCursorPosition((column * 3) - 1, row);
                     Console.Write("|");
-                    /* gameBoard gives player number, index 1 gives 2nd value of string array = token string */
-                    string token = players[key: gameBoard[column, row]][1];
-                    Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[key: gameBoard[column, row]][2]);
+                    /* gameBoard cells all belong to a player. Empty cells belong to player 'none' */
+                    string token = gameBoard.Cells[column, row].Token;
+                    Console.ForegroundColor = players[key: gameBoard[column, row]][2]);
                     Console.Write(token);
                     Console.ForegroundColor = ConsoleColor.Black;
                 }

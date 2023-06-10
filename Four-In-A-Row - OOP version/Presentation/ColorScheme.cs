@@ -40,14 +40,20 @@ namespace Four_In_A_Row___OOP_version.Presentation
             }
         }
 
-        public void changeBackgroundColorTo(string color)
+        public void ChangeBackgroundColorTo(string? color)
         {
-            this.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
+            if (color != null)
+            {
+                BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
+            }
         }
 
-        public void ChangeForegroundColorTo(string color)
+        public void ChangeForegroundColorTo(string? color)
         {
-            this.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
+            if (color != null)
+            {
+                ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
+            }
         }
     }
 }

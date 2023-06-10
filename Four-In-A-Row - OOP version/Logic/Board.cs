@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Four_In_A_Row___OOP_version.Logic
+﻿namespace Four_In_A_Row___OOP_version.Logic
 {
     public class Board
     {
@@ -21,21 +14,27 @@ namespace Four_In_A_Row___OOP_version.Logic
         public Player[,] Cells { get; set; }
         public bool[] ColumnIsFull { get; set; }
 
+        /* constructs a gameBoard with default number of rows and columns */
         public Board() : this(COLUMNS, ROWS) { }
 
+        /* constructs a gameBoard with a specific number of rows and columns */
         public Board(int columns, int rows)
         {
             Columns = columns;
             Rows = rows;
 
-            /* initialize column status to not full */
+            /* initialize column status to not full 
+             * cells on column 0 are not initialized
+             */
             ColumnIsFull = new bool[columns + 1];
             for (int i = 1; i <= columns; i++)
             {
                 ColumnIsFull[i] = false;
             }
 
-            /* initialize all cells as being empty (player 0) */
+            /* initialize all cells as being empty (player 0) 
+             * cells on row 0 and column 0 are not initialized
+             */
             Cells = new Player[columns + 1, rows + 1];
             for (int i = 1; i <= columns; i++)
             {

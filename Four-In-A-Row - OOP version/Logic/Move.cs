@@ -1,6 +1,4 @@
-﻿using Four_In_A_Row___OOP_version.Presentation;
-
-namespace Four_In_A_Row___OOP_version.Logic
+﻿namespace Four_In_A_Row___OOP_version.Logic
 {
     internal class Move
     {

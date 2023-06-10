@@ -1,4 +1,5 @@
 ﻿using Four_In_A_Row___OOP_version.Logic;
+using System.ComponentModel;
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
@@ -8,9 +9,9 @@ namespace Four_In_A_Row___OOP_version.Presentation
         public static readonly string defaultForegroundColor = "Blue";
         public static readonly ColorScheme defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
 
-        public ColorScheme currentColorScheme;
+        public ColorScheme CurrentColorScheme {get; set;} = defaultColorScheme;
 
-        private static string? rawInput;
+        private string? rawInput;
 
         private ConsoleOutput Output {get; set; }
 
@@ -19,7 +20,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
             leftCursorPosition = left;
             topCursorPosition = top;
             Output = new ConsoleOutput(left, top);
-            currentColorScheme = defaultColorScheme;
+            CurrentColorScheme = defaultColorScheme;
         }
 
         public static void SetDefaultColors()
@@ -29,7 +30,8 @@ namespace Four_In_A_Row___OOP_version.Presentation
 
         public void SetColors(string backgroundColor, string foregroundColor)
         {
-            currentColorScheme = new(backgroundColor, foregroundColor);
+            CurrentColorScheme = new(backgroundColor, foregroundColor);
+            CurrentColorScheme.Implement();
         }
 
         public void PressAnyKeyToContinue()
@@ -83,7 +85,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
                 SetCursorPosition(2, topCursorPosition + 2);
                 Output.Print($"Name for {players[i]}: ");
 
-                currentColorScheme.ChangeForegroundColorTo(players[i].Color);
+                CurrentColorScheme.ChangeForegroundColorTo(players[i].Color);
                 rawInput = Console.ReadLine();
                 players[i].Name = rawInput ?? players[i].Name;
                 Console.ResetColor();
@@ -91,31 +93,27 @@ namespace Four_In_A_Row___OOP_version.Presentation
             Output.Print("", true);
         }
 
-        private static void GetBoardDimensions()
+        public Board GetBoardDimensions()
         {
-            Console.WriteLine($"Set board dimensions");
-            Console.WriteLine($"Defaults are {COLUMNS} columns by {ROWS} rows.");
-            Console.WriteLine($"Allowed range is {MINCOLUMNS} - {MAXCOLUMNS} columns by {MINROWS} - {MAXROWS} rows.");
-            Console.WriteLine("Press [enter] to accept default.");
-            Console.WriteLine();
-            foreach (string dimension in gameBoardSize.Keys.ToList())
-            {
-                validInput = false;
-                Console.Write($"Number of {dimension} [{gameBoardSize[dimension][1]}]: ");
-                while (!validInput)
-                {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    rawInput = Console.ReadLine();
+            Output.PrintBoardDimensionsText();
 
-                    Console.ResetColor();
-                    if (!string.IsNullOrWhiteSpace(rawInput))
-                    {
-                        validInput = int.TryParse(rawInput, out int result);
-                        if (validInput) gameBoardSize[dimension][1] = Math.Max(gameBoardSize[dimension][0], Math.Min(Math.Abs(result), gameBoardSize[dimension][2]));
-                    }
-                    else validInput = true;
-                }
-            }
+            int columns = GetDimension("columns", Board.COLUMNS, Board.MINCOLUMNS, Board.MAXCOLUMNS);
+            int rows = GetDimension("rows", Board.ROWS, Board.MINROWS, Board.MAXROWS);
+
+            return new Board(columns, rows);
+        }
+
+        private int GetDimension(string dimension, int defaultValue, int minValue, int maxValue)
+        {
+            SetDefaultColors();
+            Output.Print($"Number of {dimension} [{defaultValue}]: ");
+            
+            rawInput = Console.ReadLine();
+            bool validInput = int.TryParse(rawInput, out int result);
+
+            // als de dimensie invoer correct is (minValue <= invoer <= maxValue) wordt die returned,
+            // anders gebruiken we de standaardwaarde.
+            return validInput ? Math.Max(minValue, Math.Min(Math.Abs(result), maxValue)) : defaultValue;
         }
 
         /* @ToDo */

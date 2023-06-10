@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Four_In_A_Row___OOP_version.Logic
+﻿namespace Four_In_A_Row___OOP_version.Logic
 {
     public class Game
     {
@@ -15,11 +9,11 @@ namespace Four_In_A_Row___OOP_version.Logic
 
         public static Player[] Players { get; } =
 {
-            new Player(0, "empty cell", "  ", "Black"),
-            new Player(1, "player 1", "[]", "Red"),
-            new Player(2, "player 2", "()", "Green"),
-            new Player(3, "player 3", "<>", "Magenta"),
-            new Player(4, "player 4", "><", "DarkYellow")
+            new Player(0, "empty cell", "  ", ConsoleColor.Black),
+            new Player(1, "player 1", "[]", ConsoleColor.Red),
+            new Player(2, "player 2", "()", ConsoleColor.Green),
+            new Player(3, "player 3", "<>", ConsoleColor.Magenta),
+            new Player(4, "player 4", "><", ConsoleColor.DarkYellow)
         };
 
         public static Player[]? ActivePlayers { get; set; }
