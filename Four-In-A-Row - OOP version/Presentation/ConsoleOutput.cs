@@ -1,76 +1,79 @@
 ﻿using Four_In_A_Row___OOP_version.Logic;
-using System.Data.Common;
+using System.Linq;
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
-    public class ConsoleOutput : ConsoleConfig
+    public static class ConsoleOutput
     {
-        public readonly ConsoleColor defaultBackgroundColor = ConsoleColor.Black;
-        public readonly ConsoleColor defaultForegroundColor = ConsoleColor.White;
-        
-        public readonly ColorScheme defaultColorScheme;
-        public ColorScheme CurrentColorScheme { get; set; }
-
-        public ConsoleOutput(int left, int top)
+        public static void PrintWelcomeMessage()
         {
-            leftCursorPosition = left;
-            topCursorPosition = top;
-            defaultColorScheme = new(defaultBackgroundColor, defaultForegroundColor);
-            CurrentColorScheme = defaultColorScheme;
+            // first row, column are on position 0
+            Console.SetCursorPosition(0, 1);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+
+            // write leading spaces to avoid having to set cursorPosition each time
+            Console.WriteLine("  |--------------------------------------------------|");
+            Console.WriteLine("  | Welcome to 4-in-a-Row, the classic tactics game. |");
+            Console.WriteLine("  |--------------------------------------------------|");
         }
 
-        public void SetDefaultColors()
+        public static void PrintBoardDimensionsText()
         {
-            SetColors(defaultBackgroundColor, defaultForegroundColor);
+            // default values
+            Console.SetCursorPosition(2, Console.CursorTop + 1);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("Defaults are ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(Board.COLUMNS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" columns by ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(Board.ROWS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(" rows.");
+
+            // allowed values
+            Console.SetCursorPosition(2, Console.CursorTop);
+            Console.Write("Allowed range is ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(Board.MINCOLUMNS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" - ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(Board.MAXCOLUMNS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" columns by ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(Board.MINROWS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" - ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(Board.MAXROWS);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(" rows.");
+
+            // Press enter to accept defaults
+            Console.SetCursorPosition(2, Console.CursorTop);
+            Console.Write("Press [");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("enter");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("] to accept default.");
         }
 
-        public void SetColors(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
-        {
-            CurrentColorScheme = new(backgroundColor, foregroundColor);
-            CurrentColorScheme.Implement();
-        }
-
-        public void Print(string text, bool crlf = false)
-        {
-            Console.SetCursorPosition(leftCursorPosition, topCursorPosition);
-            if (crlf)
-            {
-                Console.WriteLine(text);
-            }
-            else
-            {
-                Console.Write(text);
-            }
-        }
-
-        public void PrintWelcomeMessage()
-        {
-            Print("Welcome to 4-in-a-Row, the classic game.", true);
-            Print("", true);
-        }
-
-        public void PrintBoardDimensionsText()
-        {
-            Console.SetCursorPosition(leftCursorPosition, topCursorPosition);
-            Print("Set board dimensions", true);
-            Print($"Defaults are {Board.COLUMNS} columns by {Board.ROWS} rows.", true);
-            Print($"Allowed range is {Board.MINCOLUMNS} - {Board.MAXCOLUMNS} columns by {Board.MINROWS} - {Board.MAXROWS} rows.", true);
-            Print("Press [enter] to accept default.", true);
-            Print("", true);
-        }
-
-        public void DisplayGameBoard(Board gameBoard)
+        public static void DisplayGameBoard(Board gameBoard)
         {
             Console.Clear();
-            SetColors(ConsoleColor.White, ConsoleColor.Black);
+            ConsoleConfig.SetColors(ConsoleColor.White, ConsoleColor.Black);
             for (int row = 1; row <= gameBoard.Rows; row++)
             {
                 for (int column = 1; column <= gameBoard.Rows; column++)
                 {
                     Console.SetCursorPosition((column * 3) - 1, row);
                     Console.Write("|");
-                    /* gameBoard cells all belong to a player. Empty cells belong to player 'none' */
-                    string token = gameBoard.Cells[column, row].Token;
+
+                    // gameBoard cells all belong to a player. Empty cells belong to player 0 ('empty cell')
                     Console.ForegroundColor = gameBoard.Cells[column, row].Color;
                     Console.Write(gameBoard.Cells[column, row].Token);
                     Console.ForegroundColor = ConsoleColor.Black;
@@ -97,14 +100,13 @@ namespace Four_In_A_Row___OOP_version.Presentation
             Console.Write("|");
         }
 
-        public void UpdateGameBoardDisplay(Move latestMove)
+        public static void UpdateGameBoardDisplay(Move latestMove)
         {
             /* column * 3 because each cell takes up 3 positions */
             /* column + 3 because each line starts with 2 spaces */
             /* row + 1 because the top line of the console is left empty */
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = latestMove.Player.Color;
             Console.SetCursorPosition(latestMove.Column * 3, latestMove.Row);
+            ConsoleConfig.SetColors(ConsoleColor.White, latestMove.Player.Color);
             Console.Write(latestMove.Player.Token);
         }
     }

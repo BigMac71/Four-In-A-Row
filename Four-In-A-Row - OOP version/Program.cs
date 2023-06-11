@@ -7,18 +7,16 @@ namespace Four_In_A_Row___OOP_version
     {
         static void Main()
         {
-            ConsoleInput input  = new(2, 2);
-            ConsoleOutput output = new(2, 2);
+            ConsoleConfig.Reset();
+            ConsoleOutput.PrintWelcomeMessage();
 
-            output.PrintWelcomeMessage();
+            int playerCount = ConsoleInput.GetPlayerCount();
 
-            int playerCount = input.GetPlayerCount();
-            Player[] players = new Player[playerCount];
-            input.GetPlayerNames(players);
-
-            Board gameBoard = input.GetBoardDimensions();
+            Board gameBoard = ConsoleInput.GetBoardDimensions();
 
             Game game = new(playerCount, gameBoard);
+
+            game.Players = ConsoleInput.GetPlayerNames(game.Players);
 
             Move latestMove;
 
@@ -26,33 +24,39 @@ namespace Four_In_A_Row___OOP_version
             /* START GAME */
             /**************/
 
-            input.PressAnyKeyToContinue();
-            output.DisplayGameBoard(gameBoard);
+            ConsoleInput.PressAnyKeyToContinue();
+            ConsoleOutput.DisplayGameBoard(gameBoard);
 
             do
             {
-                latestMove = input.GetPlayerMove(game);
-                output.UpdateGameBoardDisplay(latestMove); // show the newly placed token without rebuilding the whole game board
+                latestMove = ConsoleInput.GetPlayerMove(game);
 
+                // show the newly placed token without rebuilding the whole game board
+                ConsoleOutput.UpdateGameBoardDisplay(latestMove);
+
+                // if latestMove wins the game,
+                // quit the loop and give feedback
                 if (latestMove.WinsTheGame())
                 {
                     Console.ResetColor();
                     Console.SetCursorPosition(2, gameBoard.Rows + 7);
                     Console.WriteLine($"Proficiat {latestMove.Player.Name}. U hebt gewonnen!");
+                    break;
                 }
-                else
+
+                // if there's no winner, but the gameboard has become completely full,
+                // quit the loop and give feedback
+                if (gameBoard.BoardIsFull())
                 {
-                    if (gameBoard.BoardIsFull())
-                    {
-                        Console.SetCursorPosition(2, gameBoard.Rows + 7);
-                        Console.ResetColor();
-                        Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
-                    }
+                    Console.SetCursorPosition(2, gameBoard.Rows + 7);
+                    Console.ResetColor();
+                    Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
+                    break;
                 }
             }
             while (!latestMove.WinsTheGame());
 
-            Console.ReadLine(); // keep console window open after program ends
+            ConsoleInput.PressAnyKeyToContinue();
         }
     }
 }

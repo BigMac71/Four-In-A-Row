@@ -2,12 +2,9 @@
 
 namespace Four_In_A_Row___OOP_version.Presentation
 {
-    public class ConsoleConfig
+    public static class ConsoleConfig
     {
-        private const string TITLE = "Four-In-A-Row - OOP version";
-
-        public int leftCursorPosition { get; set; } = 2;
-        public int topCursorPosition { get; set; } = 2;
+        private static readonly string TITLE = "Four-In-A-Row - OOP version";
 
         public static void Reset()
         {
@@ -17,22 +14,16 @@ namespace Four_In_A_Row___OOP_version.Presentation
             Console.Clear();
         }
 
-        public void SetCursorPosition() 
-        {
-            Console.CursorLeft = leftCursorPosition;
-            Console.CursorTop = topCursorPosition;
-        }
-
         public static void SetCursorPosition(int left, int top)
         {
             Console.CursorLeft = left;
             Console.CursorTop = top;
         }
 
-        public void SaveCursorPosition(int left, int top)
+        public static void SetColors(ConsoleColor backgroundColor, ConsoleColor foregroundColor)
         {
-            leftCursorPosition = left;
-            topCursorPosition = top;
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
         }
     }
 }

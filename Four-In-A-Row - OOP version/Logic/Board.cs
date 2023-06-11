@@ -38,7 +38,7 @@
             {
                 for (int j = 1; j <= rows; j++)
                 {
-                    Cells[i, j] = Game.Players[0];
+                    Cells[i, j] = Game.defaultPlayers[0];
                 }
             }
         }
