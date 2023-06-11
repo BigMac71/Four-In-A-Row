@@ -30,6 +30,7 @@ namespace Four_In_A_Row___OOP_version
             do
             {
                 latestMove = ConsoleInput.GetPlayerMove(game);
+                game.Moves.Add(latestMove);
 
                 // show the newly placed token without rebuilding the whole game board
                 ConsoleOutput.UpdateGameBoardDisplay(latestMove);

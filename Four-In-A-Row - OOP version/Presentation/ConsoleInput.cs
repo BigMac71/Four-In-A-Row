@@ -7,7 +7,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
     {
         public static void PressAnyKeyToContinue()
         {
-            Console.SetCursorPosition(1, +1);
+            Console.SetCursorPosition(1, Console.CursorTop + 1);
             ConsoleConfig.SetColors(ConsoleColor.Black, ConsoleColor.White);
             Console.Write("Press any key to continue... ");
             Console.ReadKey();
@@ -92,7 +92,12 @@ namespace Four_In_A_Row___OOP_version.Presentation
                 
                 Console.ForegroundColor = players[i].Color;
                 rawInput = Console.ReadLine();
-                players[i].Name = rawInput ?? players[i].Name;
+
+                // assign new name to player only if input is not empty
+                if (!String.IsNullOrEmpty(rawInput))
+                {
+                    players[i].Name = rawInput;
+                }
             }
 
             return players;

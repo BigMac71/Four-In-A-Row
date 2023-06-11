@@ -68,7 +68,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
             ConsoleConfig.SetColors(ConsoleColor.White, ConsoleColor.Black);
             for (int row = 1; row <= gameBoard.Rows; row++)
             {
-                for (int column = 1; column <= gameBoard.Rows; column++)
+                for (int column = 1; column <= gameBoard.Columns; column++)
                 {
                     Console.SetCursorPosition((column * 3) - 1, row);
                     Console.Write("|");
@@ -78,7 +78,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
                     Console.Write(gameBoard.Cells[column, row].Token);
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
-            Console.Write(" |");
+            Console.Write("|");
             }
 
             // horizontal bar below board and above column numbers
