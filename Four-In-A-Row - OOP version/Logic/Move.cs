@@ -1,6 +1,6 @@
 ﻿namespace Four_In_A_Row___OOP_version.Logic
 {
-    internal class Move
+    public class Move
     {
         public Board Board { get; set; }
         public Player Player { get; set; }
@@ -26,11 +26,7 @@
                 {
                     if (Board.Cells[Column, i].Number == 0) // if cell is empty
                     {
-                        // update gameBoard
-                        Board.Cells[Column, i] = Player;
-
-                        // if top row, set column status to full
-                        if (i == 1) Board.ColumnIsFull[Column] = true;
+                        Board.Update(this); // we can already update the game board with this new legal move
 
                         return i; // no need to continue since an empty cell was found already
                     }

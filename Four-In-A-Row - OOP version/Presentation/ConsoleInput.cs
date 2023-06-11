@@ -72,7 +72,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
                     SetCursorPosition(1, topCursorPosition + 2);
                     Output.Print($"Ongeldig aantal spelers. Gelieve een getal in te geven tussen {Game.MINPLAYERS} en {Game.MAXPLAYERS}", true);
                 }
-                /* default value applies if player presses [ENTER] or space(s) */
+                // default value applies if player presses [ENTER] or space(s)
                 else return Game.defaultPlayerCount;
             } 
             while (true);
@@ -112,59 +112,67 @@ namespace Four_In_A_Row___OOP_version.Presentation
             rawInput = Console.ReadLine();
             bool validInput = int.TryParse(rawInput, out int result);
 
-            /* if input is valid (can be cast to int)
-             *     we calculate if it's absolute value is within min and max bounds,
-             *     if that is within bounds, that is returned
-             *     if not, minValue is returned if abs(input) < minValue, or maxValue if abs(input) > maxValue
-             * if input is not valid, the defaultValue is returned.
-             */
+            // if input is valid (can be cast to int)
+            //     we calculate if it's absolute value is within min and max bounds,
+            //     if that is within bounds, that is returned
+            //     if not, minValue is returned if abs(input) < minValue, or maxValue if abs(input) > maxValue
+            // if input is not valid, the defaultValue is returned.
             return validInput ? Math.Max(minValue, Math.Min(Math.Abs(result), maxValue)) : defaultValue;
         }
 
-        /* @ToDo */
-        private static void GetPlayerMove(int turn, int player)
+        public Move GetPlayerMove(Game game)
         {
+            int currentTurn = game.Moves.Count + 1;
+            Player currentPlayer = game.GetCurrentPlayer();
+            Move currentMove;
+            bool validInput;
+
             Console.ResetColor();
 
             /* clear console lines */
-            Console.SetCursorPosition(0, gameBoardSize["rows"][1] + 4);
+            Console.SetCursorPosition(0, game.GameBoard.Rows + 4);
             Console.Write(new String(' ', Console.BufferWidth));
             Console.Write(new String(' ', Console.BufferWidth));
 
-            Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 4);
-            Console.Write($"Ronde {turn}.");
+            Console.SetCursorPosition(2, game.GameBoard.Rows + 4);
+            Console.Write($"Ronde {currentTurn}.");
 
-            validInput = false;
-            while (!validInput)
+            do
             {
-                Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), players[player][2]);
-                Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 5);
+                Console.ForegroundColor = currentPlayer.Color;
+                Console.SetCursorPosition(2, game.GameBoard.Rows + 5);
                 Console.Write(new String(' ', Console.BufferWidth));
-                Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 5);
-                Console.Write($"{players[player][0]} is aan zet: ");
-                rawInput = Console.ReadLine();
+                Console.SetCursorPosition(2, game.GameBoard.Rows + 5);
+                Console.Write($"{currentPlayer.Name} is aan zet: ");
 
+                rawInput = Console.ReadLine();
                 validInput = int.TryParse(rawInput, out int result);
+
                 if (validInput)
                 {
-                    currentMove = new Move(gameBoard, currentPlayer, result);
-                    if (isColumnFull[currentMove])
+                    currentMove = new Move(game.GameBoard, currentPlayer, result);
+                    if (game.GameBoard.ColumnIsFull[currentMove.Column])
                     {
-                        validInput = false;
-                        Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
+                        Console.SetCursorPosition(2, game.GameBoard.Rows + 7);
                         Console.ResetColor();
                         Console.WriteLine("Deze kolom is vol. Je kan hier geen token meer plaatsen.");
                     }
-                    else
+                    else if (game.GameBoard.ColumnIsInValidRange(result))
                     {
-                        /* clear console line with potential 'column full' message */
-                        Console.SetCursorPosition(0, gameBoardSize["rows"][1] + 7);
+                        // clear console line with potential 'column full' message
+                        Console.SetCursorPosition(0, game.GameBoard.Rows + 7);
                         Console.Write(new String(' ', Console.BufferWidth));
 
-                        currentMove.CalculateRow();
+                        return currentMove;
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(2, game.GameBoard.Rows + 7);
+                        Console.ResetColor();
+                        Console.WriteLine($"Dit is een ongeldig kolomnummer. Vul een nummer in tussen 1 en {game.GameBoard.Columns}.");
                     }
                 }
-            }
+            } while (true);
         }
     }
 }

@@ -54,5 +54,24 @@
 
             return gameBoardIsFull;
         }
+
+        public void Update(Move move)
+        {
+            Cells[move.Column, move.Row] = move.Player;
+            CheckColumnFull(move);
+        }
+
+        public void CheckColumnFull(Move move)
+        {
+            if (move.Row == 1)
+            {
+                ColumnIsFull[move.Column] = true;
+            }
+        }
+
+        public bool ColumnIsInValidRange(int column)
+        {
+            return column >= 1 && column <= Columns;
+        }
     }
 }

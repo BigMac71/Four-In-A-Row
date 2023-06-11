@@ -7,7 +7,7 @@
         
         public static readonly int defaultPlayerCount = 2;
 
-        public static Player[] Players { get; } =
+        public static Player[] Players { get; set; } =
 {
             new Player(0, "empty cell", "  ", ConsoleColor.Black),
             new Player(1, "player 1", "[]", ConsoleColor.Red),
@@ -16,14 +16,24 @@
             new Player(4, "player 4", "><", ConsoleColor.DarkYellow)
         };
 
-        public static Player[]? ActivePlayers { get; set; }
-        
-        public Game() : this(defaultPlayerCount) { }
+        public Board GameBoard { get; set; }
 
-        public Game(int playerCount) 
+        public List<Move> Moves { get; set; }
+        
+        public Game() : this(defaultPlayerCount, new Board()) { }
+
+        public Game(int playerCount, Board gameBoard) 
         { 
-            ActivePlayers = new Player[playerCount + 1];
-            ActivePlayers = Players.Take(playerCount + 1).ToArray();
+            Players = Players.Take(playerCount + 1).ToArray();
+            GameBoard = gameBoard;
+            Moves = new List<Move>();
+        }
+
+        public Player GetCurrentPlayer()
+        {
+            int index = (Moves.Count) % (Players.Length - 1) + 1;
+
+            return Players[index];
         }
     }
 }

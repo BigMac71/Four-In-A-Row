@@ -3,71 +3,56 @@ using Four_In_A_Row___OOP_version.Presentation;
 
 namespace Four_In_A_Row___OOP_version
 {
-    internal class Program
+    static class Program
     {
-        public static ConsoleInput Input { get; private set; } = new(2, 2);
-        public static ConsoleOutput Output { get; private set;  } = new(2, 2);
-
-        public static Game? Game { get; private set; }
-        public static Board? Board { get; private set; }
-        public static Move? CurrentMove { get; private set; }
-
         static void Main()
         {
-            /**************/
-            /* GAME SETUP */
-            /**************/
+            ConsoleInput input  = new(2, 2);
+            ConsoleOutput output = new(2, 2);
 
-            // output.WelcomeMessage();
-            Game = new Game(Input.GetPlayerCount());
+            output.PrintWelcomeMessage();
 
-            Input.GetPlayerNames();
-            Input.GetBoardDimensions();
+            int playerCount = input.GetPlayerCount();
+            Player[] players = new Player[playerCount];
+            input.GetPlayerNames(players);
+
+            Board gameBoard = input.GetBoardDimensions();
+
+            Game game = new(playerCount, gameBoard);
+
+            Move latestMove;
 
             /**************/
             /* START GAME */
             /**************/
 
-            Input.PressAnyKeyToContinue();
-            DisplayGameBoard();
+            input.PressAnyKeyToContinue();
+            output.DisplayGameBoard(gameBoard);
 
             do
             {
-                /* since we count starting from 1, we need to add one and start calculating before turn has been increased */
-                /* example (with playerCount = 2): 
-                 * [turn 1]
-                 * currentTurn = 0 => currentPlayer = (0 % 2) + 1 = 1
-                 * [turn 2]
-                 * currentTurn = 1 => currentPlayer = (1 % 2) + 1 = 2
-                 * [turn 3]
-                 * currentTurn = 2 => currentPlayer = (2 % 2) + 1 = 1
-                 * etc...
-                 */
-                currentPlayer = (currentTurn % playerCount) + 1;
-                currentTurn++; /* new round; starts at 1, not 0 */
+                latestMove = input.GetPlayerMove(game);
+                output.UpdateGameBoardDisplay(latestMove); // show the newly placed token without rebuilding the whole game board
 
-                GetPlayerMove(currentTurn, currentPlayer);
-                UpdateGameBoardDisplay(latestMove); /* show the newly placed token without rebuilding the whole game board */
-
-                if (GameHasAWinner(latestMove))
+                if (latestMove.WinsTheGame())
                 {
                     Console.ResetColor();
-                    Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
-                    Console.WriteLine($"Proficiat {players[latestMove["player"]][0]}. U hebt gewonnen!");
+                    Console.SetCursorPosition(2, gameBoard.Rows + 7);
+                    Console.WriteLine($"Proficiat {latestMove.Player.Name}. U hebt gewonnen!");
                 }
                 else
                 {
-                    if (IsGameBoardFull(isColumnFull))
+                    if (gameBoard.BoardIsFull())
                     {
-                        Console.SetCursorPosition(2, gameBoardSize["rows"][1] + 7);
+                        Console.SetCursorPosition(2, gameBoard.Rows + 7);
                         Console.ResetColor();
                         Console.WriteLine("Er zijn geen zetten meer mogelijk. Het gehele spelbord is opgevuld. Er is geen winnaar!.");
                     }
                 }
             }
-            while (!GameHasAWinner(latestMove) && !IsGameBoardFull(isColumnFull));
+            while (!latestMove.WinsTheGame());
 
-            Console.ReadLine(); /* keep console window open after program ends */
+            Console.ReadLine(); // keep console window open after program ends
         }
     }
 }
