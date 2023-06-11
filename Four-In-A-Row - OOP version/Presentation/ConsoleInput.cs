@@ -7,7 +7,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
     {
         public static void PressAnyKeyToContinue()
         {
-            Console.SetCursorPosition(1, Console.CursorTop + 1);
+            Console.SetCursorPosition(2, Console.CursorTop + 1);
             ConsoleConfig.SetColors(ConsoleColor.Black, ConsoleColor.White);
             Console.Write("Press any key to continue... ");
             Console.ReadKey();

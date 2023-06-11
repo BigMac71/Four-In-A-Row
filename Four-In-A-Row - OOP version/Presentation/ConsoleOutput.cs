@@ -9,8 +9,7 @@ namespace Four_In_A_Row___OOP_version.Presentation
         {
             // first row, column are on position 0
             Console.SetCursorPosition(0, 1);
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            ConsoleConfig.SetColors(ConsoleColor.Black, ConsoleColor.DarkCyan);
 
             // write leading spaces to avoid having to set cursorPosition each time
             Console.WriteLine("  |--------------------------------------------------|");
